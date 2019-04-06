@@ -1,0 +1,45 @@
+#game-space{
+    background: yellow;
+}
+
+h1, h2, h3, #clock {
+    text-align: center;
+}
+
+button {
+    width: 40%;
+    margin-left: 30%;
+    margin-right: 30%;
+}
+
+#image {
+    position: relative;
+    width: 50px;
+}
+
+
+.footer{
+    position: relative;
+    bottom: 0px;
+    background: black;
+    border-top: 2px groove red;
+    /* border-bottom: 2px groove red; */
+    text-align: center;
+    padding-top: 50px;
+    padding-bottom: 20px;
+    color: white;
+    width: 100%;
+}
+
+form{
+    color: yellow;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: normal;
+}
+
+#github, #linkedin, #stack {
+    z-index: 10;
+    height: 30px;
+    width: 30px;
+    margin: 10px 2px;
+}
