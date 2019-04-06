@@ -9,7 +9,7 @@ $(document).ready(function () {
     var numIncorrect = 0;
     var numAnswered = 0;
     var answers = [];
-    var curQuestion = 0;
+    var curQuestion = -1;
 
 
     //Sets up questions and answers for our game
@@ -93,17 +93,30 @@ $(document).ready(function () {
         $(elementId).css("visibility", "visible");
     };
     function write(elementId, thing) {
-        $(elementId).html('<h3>' + thing + "</h3>")
+        return $(elementId).html('<h3>' + thing + "</h3>")
     };
 
     //Sets up the questions per round
     function questionWrite() {
+        curQuestion++;
+        $('#image').css('display', 'none');
+        $('#snippet').css('display', 'none');
+        $("#image").html(image);
+        $("#snippet").html(snippet);
+        $("#answers-div").empty();
+        $("#question").html('');
         if (curQuestion <= (gameQuestions.length - 1)) {
-            $('#questions').html('<h2>' + gameQuestions[curQuestion].question + '</h2>');
+            $('#questions').html(gameQuestions[curQuestion].question);
             answers = gameQuestions[curQuestion].answers;
             show('.answer');
+            var answersDiv = $("#answers-div");
             for (var i = 0; i < answers.length; i++) {
-                $('#answer-' + i).html('<h3>' + answers[i] + '</h3>');
+                var answer = $("<div></div>");
+                answer.html(answers[i]);
+                answer.attr("id", "answer-" + i)
+                answer.attr("data-index", i);
+                answer.addClass("answer");
+                answersDiv.append(answer);
             }
         }
         else {
@@ -123,11 +136,8 @@ $(document).ready(function () {
     function start() {
         $('#clock').html('<h2> Time Remaining: ' + timerNumber + '</h2>');
         counter = setInterval(countDown, 1000);
-
         $('#start').empty();
-
         hide('#start-button');
-
         questionWrite();
     };
 
@@ -137,6 +147,42 @@ $(document).ready(function () {
         $('#questions').empty();
         $('#stats').empty();
         answerClear();
+    }
+
+    function correctGuess() {
+        $("#questions").html("<h2>Correct!</h2>");
+        $('#image').css('display', 'flex');
+        $('#snippet').css('display', 'block');
+        var image = $("<img>");
+        image.attr("src", gameQuestions[curQuestion].image);
+        image.addClass("winning-image");
+        var snippet = $("<h3></h3>");
+        snippet.addClass("snippet");
+        snippet.text(gameQuestions[curQuestion].snippet);
+        $("#image").html(image);
+        $("#snippet").html(snippet);
+        answerClear();
+        // setTimeout(nextQuestion, 10000);
+        stop();
+        setTimeout(questionWrite, 10000);
+    }
+
+    function incorrectGuess() {
+        $("#questions").html("<h2>Incorrect.</h2>");
+        $('#snippet').css('display', 'block');
+        var snippet = $("<h3></h3>");
+        snippet.addClass("snippet");
+        var correctAnswer = gameQuestions[curQuestion].answers[gameQuestions[curQuestion].correct];
+        correctAnswer = correctAnswer.replace('<h3>', '');
+        correctAnswer = correctAnswer.replace('</h3>', '');
+        correctAnswer = correctAnswer.replace('<i>', '');
+        correctAnswer = correctAnswer.replace('</i>', '');
+        snippet.text("Oh no, you got this one wrong. The correct answer was " + correctAnswer);
+        $("#snippet").html(snippet);
+        answerClear();
+        // setTimeout(nextQuestion, 10000);
+        stop();
+        setTimeout(questionWrite, 10000);
     }
 
     //Begins logic for our timer 
@@ -173,8 +219,8 @@ $(document).ready(function () {
 
         $('#stats').append('<h3>Results</h3>');
         $('#stats').append('<h3>Total Questions Answered: ' + numAnswered + '</h3>');
-        $('#stats').append('<h3>Number of Correct Answers: ' + numCorrect + '</h3>');
-        $('#stats').append('<h3>Number of Incorrect Answers: ' + numIncorrect + '</h3>');
+        $('#stats').append('<h3>Answers uncovered: ' + numCorrect + '</h3>');
+        $('#stats').append('<h3>Answers left to discover: ' + numIncorrect + '</h3>');
         show('#reset');
     };
 
@@ -188,36 +234,42 @@ $(document).ready(function () {
         timerNumber = 30;
     }
 
+    function logResults() {
+        console.log('Correct: ', numCorrect);
+        console.log('Incorrect: ', numIncorrect);
+        console.log('Question Index: ', curQuestion);
+    }
+
     //When an answer is clicked, this runs through logic
     // to determine if it is correct or incorrect and 
     // what to display
-    $('.answer').click(function () {
+    $('body').on('click', '.answer', function () {
         var clicked = $(this);
-        var value = clicked.attr('value');
+        var value = parseInt(clicked.attr('data-index'));
         var correctAnswer = gameQuestions[curQuestion].correct;
 
-        if (value == correctAnswer) {
+        if (value === correctAnswer) {
             numAnswered++;
             numCorrect++;
-            curQuestion++;
-            $('#questions').empty();
-            $('#correct-answer').html('<h3> You picked ' + answers[value] + '.</h3> <br><h3>The Correct Answer was ' + answers[correctAnswer] + '.</h3>');
-            nextQuestion();
-            answerClear();
-            questionWrite();
+            $("#questions").html('');
+            $("#answers-div").empty();
+            correctGuess();
+            // $('#correct-answer').html('<h3> You picked ' + answers[value] + '.</h3> <br><h3>The Correct Answer was ' + answers[correctAnswer] + '.</h3>');
+            // nextQuestion();
+            // answerClear();
+            // questionWrite();
 
         } else {
             numAnswered++;
             numIncorrect++;
-            curQuestion++;
-            timerNumber = 30;
-            $('#correct-answer').html('<h3> You picked ' + answers[value] + '.</h3> <br><h3>The Correct Answer was ' + answers[correctAnswer] + '.</h3>');
-            $('#questions').empty();
+            // $('#correct-answer').html('<h3> You picked ' + answers[value] + '.</h3> <br><h3>The Correct Answer was ' + answers[correctAnswer] + '.</h3>');
+            $('#questions').html('');
+            incorrectGuess();
             // setTimeout(nextQuestion, 5000);
             // setTimeout(answerClear, 5000);
-            nextQuestion();
-            answerClear();
-            questionWrite();
+            // nextQuestion();
+            // answerClear();
+            // questionWrite();
             // setTimeout(questionWrite, 5000);
         }
     });

@@ -1,5 +1,27 @@
+body {
+    min-height: 100vh;
+    background: black;
+}
 #game-space{
     background: yellow;
+    min-height: 80vh;
+}
+
+#trivia-header {
+    margin-top: 50px;
+}
+
+#clock{
+    margin-top: 50px;
+}
+
+.answer {
+    cursor: pointer;
+    padding: 1px;
+}
+
+.answer:hover {
+    border: 1px solid black;
 }
 
 h1, h2, h3, #clock {
@@ -13,8 +35,17 @@ button {
 }
 
 #image {
-    position: relative;
+    /* position: relative; */
     width: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.winning-image {
+    max-height: 400px;
+    /* max-width: 600px; */
 }
 
 
