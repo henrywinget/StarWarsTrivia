@@ -98,6 +98,7 @@ $(document).ready(function () {
 
     //Sets up the questions per round
     function questionWrite() {
+        timerNumber = 30;
         curQuestion++;
         $('#image').css('display', 'none');
         $('#snippet').css('display', 'none');
@@ -150,6 +151,7 @@ $(document).ready(function () {
     }
 
     function correctGuess() {
+        timerNumber = 10;
         $("#questions").html("<h2>Correct!</h2>");
         $('#image').css('display', 'flex');
         $('#snippet').css('display', 'block');
@@ -158,18 +160,27 @@ $(document).ready(function () {
         image.addClass("winning-image");
         var snippet = $("<h3></h3>");
         snippet.addClass("snippet");
-        snippet.text(gameQuestions[curQuestion].snippet);
+        var correctAnswer = gameQuestions[curQuestion].snippet;
+        correctAnswer = correctAnswer.replace('<h3>', '');
+        correctAnswer = correctAnswer.replace('</h3>', '');
+        correctAnswer = correctAnswer.replace('<i>', '');
+        correctAnswer = correctAnswer.replace('</i>', '');
+        snippet.text(correctAnswer);
         $("#image").html(image);
         $("#snippet").html(snippet);
         answerClear();
         // setTimeout(nextQuestion, 10000);
-        stop();
         setTimeout(questionWrite, 10000);
     }
 
     function incorrectGuess() {
+        timerNumber = 10;
         $("#questions").html("<h2>Incorrect.</h2>");
         $('#snippet').css('display', 'block');
+        $('#image').css('display', 'flex');
+        var image = $("<img>");
+        image.attr("src", gameQuestions[curQuestion].image);
+        image.addClass("winning-image");
         var snippet = $("<h3></h3>");
         snippet.addClass("snippet");
         var correctAnswer = gameQuestions[curQuestion].answers[gameQuestions[curQuestion].correct];
@@ -178,10 +189,10 @@ $(document).ready(function () {
         correctAnswer = correctAnswer.replace('<i>', '');
         correctAnswer = correctAnswer.replace('</i>', '');
         snippet.text("Oh no, you got this one wrong. The correct answer was " + correctAnswer);
+        $("#image").html(image);
         $("#snippet").html(snippet);
         answerClear();
         // setTimeout(nextQuestion, 10000);
-        stop();
         setTimeout(questionWrite, 10000);
     }
 
@@ -190,7 +201,7 @@ $(document).ready(function () {
         timerNumber--;
         $('#clock').html('<h2> Time Remaining: ' + timerNumber + '</h2>');
 
-        if (timerNumber === 0) {
+        if (timerNumber === 0 && curQuestion === (gameQuestions.length - 1)) {
             gameOver();
         }
     };

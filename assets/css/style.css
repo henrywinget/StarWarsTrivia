@@ -5,6 +5,17 @@ body {
 #game-space{
     background: yellow;
     min-height: 80vh;
+    border-radius: 10px;
+    box-shadow: 10px;
+}
+
+#start-button {
+    font-size: 26px;
+    padding: 10px;
+}
+
+.container {
+    padding-top: 10vh;
 }
 
 #trivia-header {
